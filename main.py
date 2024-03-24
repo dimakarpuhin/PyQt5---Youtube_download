@@ -1,7 +1,9 @@
 import os
 import sys
 import youtube_dl
-from PyQt5 import QtCore, QtGui, QtWidgest
+from PyQt5 import QtCore, QtGui, QtWidgets
+from GUIpyQt5 import Ui_MainWindow
+
 
 class downloader(QtCore.QThread):
     mysignal = QtCore.pyqtSignal(str)
@@ -23,15 +25,15 @@ class downloader(QtCore.QThread):
     def init_args(self, url):
         self.url = url
 
-class gui(QtWidgest.QMainWindow):
-    def __init__(self, parent=None):
+class gui(QtWidgets.QMainWindow):
+    def __init__(self, parent = None):
         super().__init__(parent)
         self.ui = Ui_MainWindow()
-        self.ui = setupUi(self)
+        self.ui.setupUi(self)
 
         self.download_folder = None
         self.ui.pushButton.clicked.connect(self.get_folder)
-        self.ui.pushButton_2.cliked.connect(self.start)
+        self.ui.pushButton_2.clicked.connect(self.start)
         self.mythread = downloader()
         self.mythread.mysignal.connect(self.handler)
 
@@ -43,21 +45,21 @@ class gui(QtWidgest.QMainWindow):
                 self.mythread.start()
                 self.locker(True)
             else:
-                QtWidgest.QMessageBox.warning(self,"Ошибка", "Вы не выбрали папку!")    
+                QtWidgets.QMessageBox.warning(self,"Ошибка", "Вы не выбрали папку!")    
         else:
-            QtWidgest.QMessageBox.warning(self,"Ошибка", "Ссылк на видео не указана")  
+            QtWidgets.QMessageBox.warning(self,"Ошибка", "Ссылк на видео не указана")  
 
 
     def get_folder(self):
-        self.download_folder = QtWidgest.QFileDirectory(self,'Выбрать папку для сохранения')
+        self.download_folder = QtWidgets.QFileDialog.getExistingDirectory(self,'Выбрать папку для сохранения')
         os.chdir(self.download_folder)
 
 
     def handler(self, value):
         if value == 'finish':
             self.locked(False)
-
-        self.ui.planTextEdit.appendPlainText(value)   
+        else:
+            self.ui.planTextEdit.appendPlainText(value)   
 
 
     def locked(self, lock_value):
@@ -70,10 +72,10 @@ class gui(QtWidgest.QMainWindow):
 
 
 if __name__ == "__main__":
-    app = QtWidgest.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     win = gui()
     win.show()
-    sys.exit(app.exac_())
+    sys.exit(app.exec_())
 
 
 
